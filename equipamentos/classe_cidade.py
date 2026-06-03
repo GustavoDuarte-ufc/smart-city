@@ -1,3 +1,5 @@
+from equipamentos_poo import *
+
 class CidadeInteligente:
     def __init__(self):
         self.sensores = [SensorClimatico() for _ in range(5)]
