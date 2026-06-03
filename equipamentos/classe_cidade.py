@@ -1,4 +1,4 @@
-from equipamentos_poo import *
+from equipamentos.equipamentos_poo import *
 
 class CidadeInteligente:
     def __init__(self):

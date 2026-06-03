@@ -4,7 +4,7 @@ from database.database import Database
 from gateway.sensor_manager import SensorManager
 
 
-def start_udp_server():
+def start_udp_server(stop_event):
 
     manager = SensorManager()
     db = Database()
@@ -16,40 +16,52 @@ def start_udp_server():
 
     sock.bind(("127.0.0.1", 5001))
 
+    # Timeout para verificar periodicamente o stop_event
+    sock.settimeout(1)
+
     print("Servidor UDP iniciado")
 
-    while True:
+    while not stop_event.is_set():
 
-        data, addr = sock.recvfrom(1024)
+        try:
 
-        mensagem = data.decode()
+            data, addr = sock.recvfrom(1024)
 
-        sensor_id, value1, value2 = mensagem.split(",")
+            mensagem = data.decode()
 
-        if not manager.sensor_exists(sensor_id):
+            sensor_id, value1, value2 = mensagem.split(",")
 
-            novo_sensor = {
-                "id": sensor_id,
-                "tipo": "temperatura",
-                "ip": addr[0],
-                "porta": addr[1],
-                "status": "online"
-            }
+            if not manager.sensor_exists(sensor_id):
 
-            manager.register_sensor(novo_sensor)
+                novo_sensor = {
+                    "id": sensor_id,
+                    "tipo": "temperatura",
+                    "ip": addr[0],
+                    "porta": addr[1],
+                    "status": "online"
+                }
 
-            db.save_sensor(
+                manager.register_sensor(novo_sensor)
+
+                db.save_sensor(
+                    sensor_id,
+                    "temperatura",
+                    addr[0],
+                    addr[1],
+                    "online"
+                )
+
+            db.save_reading(
                 sensor_id,
-                "temperatura",
-                addr[0],
-                addr[1],
-                "online"
+                float(value1),
+                float(value2)
             )
 
-        db.save_reading(
-            sensor_id,
-            float(value1),
-            float(value2)
-        )
+            print(f"Leitura recebida de {sensor_id}")
 
-        print(f"Leitura recebida de {sensor_id}")
+        except socket.timeout:
+            pass
+
+    sock.close()
+
+    print("Servidor UDP encerrado")

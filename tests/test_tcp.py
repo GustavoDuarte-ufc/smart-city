@@ -1,25 +1,32 @@
 import socket
 
-client = socket.socket(
-    socket.AF_INET,
-    socket.SOCK_STREAM
-)
+while True:
 
-client.connect(("127.0.0.1", 6000))
-
-print(
-    """ 
-    1. Lista de Sensores 
-    2. Lista de Atualizações   
+    print("""
+    1. Lista de Sensores
+    2. Lista de Atualizações
+    3. Sair
     """)
-mensagem = input("Digite a sua opção: ")
 
-client.send(
-    mensagem.encode()
-)
+    mensagem = input("Digite a sua opção: ")
 
-response = client.recv(4096)
+    if mensagem == "3":
+        print("Teste TCP finalizado...")
+        break
 
-print(response.decode())
+    client = socket.socket(
+        socket.AF_INET,
+        socket.SOCK_STREAM
+    )
 
-client.close()
+    client.connect(("127.0.0.1", 6000))
+
+    client.send(
+        mensagem.encode()
+    )
+
+    response = client.recv(4096)
+
+    print(response.decode())
+
+    client.close()

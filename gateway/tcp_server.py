@@ -3,7 +3,7 @@ import socket
 from database.database import Database
 
 
-def start_tcp_server():
+def start_tcp_server(stop_event):
 
     db = Database()
 
@@ -15,50 +15,67 @@ def start_tcp_server():
         socket.SOCK_STREAM
     )
 
+    server.setsockopt(
+        socket.SOL_SOCKET,
+        socket.SO_REUSEADDR,
+        1
+    )
+
     server.bind((HOST, PORT))
 
     server.listen()
 
+    # Verifica periodicamente se deve encerrar
+    server.settimeout(1)
+
     print("Servidor TCP iniciado")
 
-    while True:
+    while not stop_event.is_set():
 
-        client, addr = server.accept()
+        try:
+            client, addr = server.accept()
 
-        request = client.recv(1024).decode()
+            request = client.recv(1024).decode()
 
-        if request == "1":
+            if request == "1":
 
-            sensors = db.get_sensors()
+                sensors = db.get_sensors()
 
-            response = ""
+                response = ""
 
-            for sensor in sensors:
-                response += f"{sensor[1]}\n"
+                for sensor in sensors:
+                    response += f"{sensor[1]}\n"
 
-            client.send(response.encode())
+                client.send(response.encode())
 
-        elif request == "2":
+            elif request == "2":
 
-            readings = db.get_readings()
+                readings = db.get_readings()
 
-            response = ""
+                response = ""
 
-            for reading in readings:
+                for reading in readings:
 
-                response += (
-                    f"Sensor: {reading[1]} | "
-                    f"Valor1: {reading[2]} | "
-                    f"Valor2: {reading[3]} | "
-                    f"Data: {reading[4]}\n"
+                    response += (
+                        f"Sensor: {reading[1]} | "
+                        f"Valor1: {reading[2]} | "
+                        f"Valor2: {reading[3]} | "
+                        f"Data: {reading[4]}\n"
+                    )
+
+                client.send(response.encode())
+
+            else:
+
+                client.send(
+                    "Comando inválido".encode()
                 )
 
-            client.send(response.encode())
+            client.close()
 
-        else:
+        except socket.timeout:
+            pass
 
-            client.send(
-                "Comando inválido".encode()
-            )
+    server.close()
 
-        client.close()
+    print("Servidor TCP encerrado")
