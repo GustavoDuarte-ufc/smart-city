@@ -2,9 +2,15 @@ import random
 import datetime
 
 class SensorClimatico:
+
+    contador = 1
+
     def __init__(self, sensor_id=None):
-        # Gera um ID de 10 dígitos se nenhum for fornecido
-        self.id = sensor_id if sensor_id else random.randint(10**9, (10**10) - 1)
+        if sensor_id is None:
+            self.id = f"Sensor-{SensorClimatico.contador}"
+            SensorClimatico.contador += 1
+        else:
+            self.id = f"Sensor-{sensor_id}"
         self.dados_atuais = {}
 
     def ler_dados(self):

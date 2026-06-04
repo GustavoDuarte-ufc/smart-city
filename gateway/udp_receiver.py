@@ -29,13 +29,21 @@ def start_udp_server(stop_event):
 
             mensagem = data.decode()
 
-            sensor_id, value1, value2 = mensagem.split(",")
+            (
+                sensor_id,
+                temperatura,
+                sensacao_termica,
+                temperatura_min,
+                temperatura_max,
+                pressao,
+                umidade
+            ) = mensagem.split(",")
 
             if not manager.sensor_exists(sensor_id):
 
                 novo_sensor = {
                     "id": sensor_id,
-                    "tipo": "temperatura",
+                    "tipo": "climatico",
                     "ip": addr[0],
                     "porta": addr[1],
                     "status": "online"
@@ -45,22 +53,29 @@ def start_udp_server(stop_event):
 
                 db.save_sensor(
                     sensor_id,
-                    "temperatura",
+                    "climatico",
                     addr[0],
                     addr[1],
                     "online"
                 )
 
-            db.save_reading(
+            db.save_sensor_reading(
                 sensor_id,
-                float(value1),
-                float(value2)
+                float(temperatura),
+                float(sensacao_termica),
+                float(temperatura_min),
+                float(temperatura_max),
+                int(pressao),
+                int(umidade)
             )
 
-            print(f"Leitura recebida de {sensor_id}")
+            print(f"Leitura climática recebida de {sensor_id}")
 
         except socket.timeout:
             pass
+
+        except Exception as e:
+            print(f"Erro ao processar mensagem UDP: {e}")
 
     sock.close()
 

@@ -42,11 +42,15 @@ class Database:
         """
 
         sql_table_readings = """
-        CREATE TABLE IF NOT EXISTS readings (
+        CREATE TABLE IF NOT EXISTS sensors_readings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             sensor_id TEXT NOT NULL,
-            value1 REAL NOT NULL,
-            value2 REAL NOT NULL,
+            temperatura REAL NOT NULL,
+            sensacao_termica REAL NOT NULL,
+            temperatura_min REAL NOT NULL,
+            temperatura_max REAL NOT NULL,
+            pressao REAL NOT NULL,
+            umidade REAL NOT NULL,
             timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         """
@@ -87,48 +91,77 @@ class Database:
             print(f"Erro ao buscar leituras: {e}")
             return []
         
-    def save_reading(self, sensor_id, value1, value2):
-        """
-        Salva uma leitura enviada por um sensor.
-        """
 
+    def save_sensor_reading(
+        self,
+        sensor_id,
+        temperatura,
+        sensacao_termica,
+        temperatura_min,
+        temperatura_max,
+        pressao,
+        umidade
+    ):
+        
         sql = """
-        INSERT INTO readings (sensor_id, value1, value2)
-        VALUES (?, ?, ?);
+        INSERT INTO sensors_readings (
+            sensor_id,
+            temperatura,
+            sensacao_termica,
+            temperatura_min,
+            temperatura_max,
+            pressao,
+            umidade
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?);
         """
 
         try:
             cursor = self._connection.cursor()
-            cursor.execute(sql, (sensor_id, value1, value2))
+
+            cursor.execute(
+                sql,
+                (
+                    sensor_id,
+                    temperatura,
+                    sensacao_termica,
+                    temperatura_min,
+                    temperatura_max,
+                    pressao,
+                    umidade
+                )
+            )
+
             self._connection.commit()
 
-            print(f"Leitura do sensor {sensor_id} salva.")
             return True
 
         except Error as e:
             print(f"Erro ao salvar leitura: {e}")
             return False
         
-    def get_readings(self):
-        """
-        Retorna todas as leituras registradas.
-        """
+    def get_sensor_readings(self):
 
         sql = """
         SELECT *
-        FROM readings
+        FROM sensors_readings
         ORDER BY timestamp DESC;
         """
 
         try:
+
             cursor = self._connection.cursor()
+
             cursor.execute(sql)
 
             return cursor.fetchall()
 
         except Error as e:
+
             print(f"Erro ao buscar leituras: {e}")
+
             return []
+        
             
     def close(self):
         """Fecha a conexão de forma limpa."""

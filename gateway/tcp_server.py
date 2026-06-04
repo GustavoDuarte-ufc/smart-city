@@ -50,17 +50,21 @@ def start_tcp_server(stop_event):
 
             elif request == "2":
 
-                readings = db.get_readings()
+                readings = db.get_sensor_readings()
 
                 response = ""
 
                 for reading in readings:
 
                     response += (
-                        f"Sensor: {reading[1]} | "
-                        f"Valor1: {reading[2]} | "
-                        f"Valor2: {reading[3]} | "
-                        f"Data: {reading[4]}\n"
+                        f"Sensor: {reading[1]}\n"
+                        f"Temperatura: {reading[2]}\n"
+                        f"Sensação: {reading[3]}\n"
+                        f"Mínima: {reading[4]}\n"
+                        f"Máxima: {reading[5]}\n"
+                        f"Pressão: {reading[6]}\n"
+                        f"Umidade: {reading[7]}\n"
+                        f"Data: {reading[8]}\n\n"
                     )
 
                 client.send(response.encode())
@@ -75,6 +79,9 @@ def start_tcp_server(stop_event):
 
         except socket.timeout:
             pass
+
+        except Exception as e:
+            print(f"Erro ao processar mensagem TCP: {e}")
 
     server.close()
 
