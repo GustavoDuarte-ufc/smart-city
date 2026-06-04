@@ -7,7 +7,6 @@ GATEWAY_HOST = "127.0.0.1"
 GATEWAY_PORT = 6000
 
 #conectar ao gateway
-
 def conectar():
     cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     cs.connect((GATEWAY_HOST, GATEWAY_PORT))
