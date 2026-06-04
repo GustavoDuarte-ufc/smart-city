@@ -1,0 +1,76 @@
+syntax = "proto3";
+package smartcity;
+
+
+message SolicitacaoDescoberta {
+    string gateway_id = 1;
+    int32  gateway_port = 2;
+}
+
+
+message RespostaDescoberta {
+  string sensor_id = 1;
+  string tipo = 2;   
+  string ip = 3;
+  int32 porta = 4;
+  string status = 5;   
+  int32 frequencia = 6;  
+
+}
+
+message LeituraSensor {
+    string sensor_id = 1;
+    string tipo = 2;
+    int64 timestamp = 3;
+    bool alerta = 4;
+    double valor1 = 5;
+    double valor2 = 6;
+    string dado_extra = 7;
+}
+
+
+message Comando {
+    string sensor_id = 1;
+    string acao = 2;
+    string valor = 3;
+}
+
+message RespostaComando {
+  bool status = 1;
+  string mensagem = 2;
+}
+
+
+message RequisicaoCliente {
+    string tipo = 1;
+    Comando comando = 2;
+    string parametro = 3;
+
+}
+
+message RespostaGateway {
+    bool status = 1;
+    string mensagem = 2;
+    string ip = 3;
+    repeated SensorInformacoes sensores = 4;
+    repeated LeituraSensor leituras = 5;
+    ResultadoAgregado agregado = 6;
+}
+
+message SensorInformacoes {
+    string sensor_id = 1;
+    string tipo = 2;
+    string ip = 3;
+    int32 porta = 4;
+    string status = 5;
+    int32 frequencia = 6;
+    int64 ultima_comunicacao = 7;
+
+}
+
+message ResultadoAgregado {
+    string descricao = 1;
+    float valor = 2;
+    string unidade = 3;
+
+}
