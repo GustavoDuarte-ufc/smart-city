@@ -1,7 +1,10 @@
 import socket
-
+from proto import mensagens_pb2
 from database.database import Database
+import traceback
 
+print(hasattr(mensagens_pb2, "RespostaGateway"))
+print(hasattr(mensagens_pb2, "RequisicaoCliente"))
 
 def start_tcp_server(stop_event):
 
@@ -34,45 +37,95 @@ def start_tcp_server(stop_event):
 
         try:
             client, addr = server.accept()
+            tamanho = int.from_bytes(
+                client.recv(4),
+                "big"
+            )
 
-            request = client.recv(1024).decode()
+            dados = client.recv(tamanho)
 
-            if request == "1":
+            request = mensagens_pb2.RequisicaoCliente()
+            request.ParseFromString(dados)
+
+            print(f"Tipo recebido: [{request.tipo}]")
+
+            if request.tipo == "listar_sensores":
 
                 sensors = db.get_sensors()
 
-                response = ""
+                response = mensagens_pb2.RespostaGateway()
 
                 for sensor in sensors:
-                    response += f"{sensor[1]}\n"
 
-                client.send(response.encode())
+                    sensor_info = response.sensores.add()
+                    sensor_info.sensor_id = sensor[1]
+                    sensor_info.tipo = sensor[2]
+                    sensor_info.ip = sensor[3]
+                    sensor_info.porta = sensor[4]
+                    sensor_info.status = sensor[5]
 
-            elif request == "2":
+                response.status = True
+                response.mensagem = "Lista de sensores"
 
+                dados = response.SerializeToString()
+
+                tamanho = len(dados).to_bytes(
+                    4,
+                    "big"
+                )
+
+                client.sendall(
+                    tamanho + dados
+                )
+
+            elif request.tipo == "leituras":
+                print("Recebida requisição de leituras")
                 readings = db.get_sensor_readings()
-
-                response = ""
+                print(f"{len(readings)} leituras encontradas")
+                response = mensagens_pb2.RespostaGateway()
 
                 for reading in readings:
 
-                    response += (
-                        f"Sensor: {reading[1]}\n"
-                        f"Temperatura: {reading[2]}\n"
-                        f"Sensação: {reading[3]}\n"
-                        f"Mínima: {reading[4]}\n"
-                        f"Máxima: {reading[5]}\n"
-                        f"Pressão: {reading[6]}\n"
-                        f"Umidade: {reading[7]}\n"
-                        f"Data: {reading[8]}\n\n"
-                    )
+                    print(reading)
 
-                client.send(response.encode())
+                    leitura = response.leituras.add()
 
+                    leitura.sensor_id = reading[1]
+                    leitura.temperatura = reading[2]
+                    leitura.sensacao_termica = reading[3]
+                    leitura.temperatura_min = reading[4]
+                    leitura.temperatura_max = reading[5]
+                    leitura.pressao = reading[6]
+                    leitura.umidade = reading[7]
+
+                print("Resposta montada")
+
+                response.status = True
+                response.mensagem = "Leituras encontradas"
+
+                dados = response.SerializeToString()
+
+                tamanho = len(dados).to_bytes(
+                    4,
+                    "big"
+                )
+
+                client.sendall(
+                    tamanho + dados
+                )
             else:
+                response = mensagens_pb2.RespostaGateway()
+                response.status = False
+                response.mensagem = "Comando inválido"
+                dados = response.SerializeToString()
 
-                client.send(
-                    "Comando inválido".encode()
+                tamanho = len(dados).to_bytes(
+                    4,
+                    "big"
+                )
+
+                client.sendall(
+                    tamanho + dados
                 )
 
             client.close()
@@ -81,7 +134,8 @@ def start_tcp_server(stop_event):
             pass
 
         except Exception as e:
-            print(f"Erro ao processar mensagem TCP: {e}")
+            print("\n===== ERRO TCP =====")
+            traceback.print_exc()
 
     server.close()
 

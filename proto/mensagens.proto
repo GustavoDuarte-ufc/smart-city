@@ -20,12 +20,13 @@ message RespostaDescoberta {
 
 message LeituraSensor {
     string sensor_id = 1;
-    string tipo = 2;
-    int64 timestamp = 3;
-    bool alerta = 4;
-    double valor1 = 5;
-    double valor2 = 6;
-    string dado_extra = 7;
+    double temperatura = 2;
+    double sensacao_termica = 3;
+    double temperatura_min = 4;
+    double temperatura_max = 5;
+    float pressao = 6;
+    float umidade = 7;
+    int64 timestamp = 8;
 }
 
 
