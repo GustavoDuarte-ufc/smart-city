@@ -6,9 +6,13 @@ GATEWAY_PORT = 6000
 
 #conectar ao gateway
 def conectar():
-    cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    cs.connect((GATEWAY_HOST, GATEWAY_PORT))
-    return cs
+    try:
+        cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        cs.connect((GATEWAY_HOST, GATEWAY_PORT))
+        return cs
+    except ConnectionRefusedError:
+        print("Erro: Gateway não está rodando.")
+        return None
 
 def enviar(socket, requisicao):
     dados = requisicao.SerializeToString()
@@ -41,40 +45,7 @@ def receber(socket):
 
     return resposta
 
-    
-""" 
-def menu():
-    while True:
-        print("1 - Listar Sensores")
-        print("2 -  Ver leituras")
-        print("3 - Enviar comando")
-        print("4 - Sair")
-
-        opcao = int(input("Digite a opção desejada: "))
-
-        if opcao == 1:
-            req = mensagens_pb2.RequisicaoCliente(tipo="listar_sensores")
-        elif opcao == 2:
-            mensagens_pb2.RequisicaoCliente(tipo="leituras")
-        elif opcao == 3:
-            sensor_id = 
-        elif opcao == 4:
-            break
-        else:
-            print("Opção inválida")
-
-        sc = conectar()
-        enviar(sc, req)
-        resp = receber(sc)
-        sc.close()
-
-
-
-
-
-if __name__ == "__main__":
-    menu()
-"""
+          
 
 def menu():
 
@@ -83,11 +54,13 @@ def menu():
         print("\n===== CLIENTE ANALÍTICO =====")
         print("1 - Listar sensores")
         print("2 - Ver leituras")
-        print("3 - Sair")
+        print("3 - Enviar comandos")
+        print("4 - Sair")
+
 
         opcao = input("Escolha: ")
 
-        if opcao == "3":
+        if opcao == "4":
             break
 
         req = mensagens_pb2.RequisicaoCliente()
@@ -99,11 +72,29 @@ def menu():
             req.tipo = "leituras"
             print("Enviando requisição de leituras...")
 
+        elif opcao == "3":
+            sensor_id = input("ID do sensor: ")
+            acao = input("Ação (ativar/desativar/set_frequencia): ")
+            valor = ""
+            if acao in ("set_frequencia", "set_limiar"):
+                valor = input("Valor: ")
+            cmd = mensagens_pb2.Comando(
+                sensor_id=sensor_id,
+                acao=acao,
+                valor=valor
+            )
+            req = mensagens_pb2.RequisicaoCliente(tipo="comando")
+            req.comando.CopyFrom(cmd)
+
         else:
             print("Opção inválida")
             continue
 
         client = conectar()
+        if client is None:
+            continue
+
+
 
         print("Conectado")
 

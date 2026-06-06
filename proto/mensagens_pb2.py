@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fmensagens.proto\x12\tsmartcity\"A\n\x15SolicitacaoDescoberta\x12\x12\n\ngateway_id\x18\x01 \x01(\t\x12\x14\n\x0cgateway_port\x18\x02 \x01(\x05\"t\n\x12RespostaDescoberta\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x0c\n\x04tipo\x18\x02 \x01(\t\x12\n\n\x02ip\x18\x03 \x01(\t\x12\r\n\x05porta\x18\x04 \x01(\x05\x12\x0e\n\x06status\x18\x05 \x01(\t\x12\x12\n\nfrequencia\x18\x06 \x01(\x05\"\xb8\x01\n\rLeituraSensor\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x13\n\x0btemperatura\x18\x02 \x01(\x01\x12\x18\n\x10sensacao_termica\x18\x03 \x01(\x01\x12\x17\n\x0ftemperatura_min\x18\x04 \x01(\x01\x12\x17\n\x0ftemperatura_max\x18\x05 \x01(\x01\x12\x0f\n\x07pressao\x18\x06 \x01(\x02\x12\x0f\n\x07umidade\x18\x07 \x01(\x02\x12\x11\n\ttimestamp\x18\x08 \x01(\x03\"9\n\x07\x43omando\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x0c\n\x04\x61\x63\x61o\x18\x02 \x01(\t\x12\r\n\x05valor\x18\x03 \x01(\t\"3\n\x0fRespostaComando\x12\x0e\n\x06status\x18\x01 \x01(\x08\x12\x10\n\x08mensagem\x18\x02 \x01(\t\"Y\n\x11RequisicaoCliente\x12\x0c\n\x04tipo\x18\x01 \x01(\t\x12#\n\x07\x63omando\x18\x02 \x01(\x0b\x32\x12.smartcity.Comando\x12\x11\n\tparametro\x18\x03 \x01(\t\"\xcb\x01\n\x0fRespostaGateway\x12\x0e\n\x06status\x18\x01 \x01(\x08\x12\x10\n\x08mensagem\x18\x02 \x01(\t\x12\n\n\x02ip\x18\x03 \x01(\t\x12.\n\x08sensores\x18\x04 \x03(\x0b\x32\x1c.smartcity.SensorInformacoes\x12*\n\x08leituras\x18\x05 \x03(\x0b\x32\x18.smartcity.LeituraSensor\x12.\n\x08\x61gregado\x18\x06 \x01(\x0b\x32\x1c.smartcity.ResultadoAgregado\"\x8f\x01\n\x11SensorInformacoes\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x0c\n\x04tipo\x18\x02 \x01(\t\x12\n\n\x02ip\x18\x03 \x01(\t\x12\r\n\x05porta\x18\x04 \x01(\x05\x12\x0e\n\x06status\x18\x05 \x01(\t\x12\x12\n\nfrequencia\x18\x06 \x01(\x05\x12\x1a\n\x12ultima_comunicacao\x18\x07 \x01(\x03\"F\n\x11ResultadoAgregado\x12\x11\n\tdescricao\x18\x01 \x01(\t\x12\r\n\x05valor\x18\x02 \x01(\x02\x12\x0f\n\x07unidade\x18\x03 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fmensagens.proto\x12\tsmartcity\"A\n\x15SolicitacaoDescoberta\x12\x12\n\ngateway_id\x18\x01 \x01(\t\x12\x14\n\x0cgateway_port\x18\x02 \x01(\x05\"t\n\x12RespostaDescoberta\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x0c\n\x04tipo\x18\x02 \x01(\t\x12\n\n\x02ip\x18\x03 \x01(\t\x12\r\n\x05porta\x18\x04 \x01(\x05\x12\x0e\n\x06status\x18\x05 \x01(\t\x12\x12\n\nfrequencia\x18\x06 \x01(\x05\"\xea\x01\n\rLeituraSensor\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x0c\n\x04tipo\x18\x02 \x01(\t\x12\x11\n\ttimestamp\x18\x03 \x01(\x03\x12\x0e\n\x06\x61lerta\x18\x04 \x01(\x08\x12\x13\n\x0btemperatura\x18\x05 \x01(\x02\x12\x18\n\x10sensacao_termica\x18\x06 \x01(\x02\x12\x17\n\x0ftemperatura_min\x18\x07 \x01(\x02\x12\x17\n\x0ftemperatura_max\x18\x08 \x01(\x02\x12\x0f\n\x07pressao\x18\t \x01(\x02\x12\x0f\n\x07umidade\x18\n \x01(\x02\x12\x12\n\ndado_extra\x18\x0b \x01(\t\"9\n\x07\x43omando\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x0c\n\x04\x61\x63\x61o\x18\x02 \x01(\t\x12\r\n\x05valor\x18\x03 \x01(\t\"3\n\x0fRespostaComando\x12\x0e\n\x06status\x18\x01 \x01(\x08\x12\x10\n\x08mensagem\x18\x02 \x01(\t\"Y\n\x11RequisicaoCliente\x12\x0c\n\x04tipo\x18\x01 \x01(\t\x12#\n\x07\x63omando\x18\x02 \x01(\x0b\x32\x12.smartcity.Comando\x12\x11\n\tparametro\x18\x03 \x01(\t\"\xcb\x01\n\x0fRespostaGateway\x12\x0e\n\x06status\x18\x01 \x01(\x08\x12\x10\n\x08mensagem\x18\x02 \x01(\t\x12\n\n\x02ip\x18\x03 \x01(\t\x12.\n\x08sensores\x18\x04 \x03(\x0b\x32\x1c.smartcity.SensorInformacoes\x12*\n\x08leituras\x18\x05 \x03(\x0b\x32\x18.smartcity.LeituraSensor\x12.\n\x08\x61gregado\x18\x06 \x01(\x0b\x32\x1c.smartcity.ResultadoAgregado\"\x8f\x01\n\x11SensorInformacoes\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x0c\n\x04tipo\x18\x02 \x01(\t\x12\n\n\x02ip\x18\x03 \x01(\t\x12\r\n\x05porta\x18\x04 \x01(\x05\x12\x0e\n\x06status\x18\x05 \x01(\t\x12\x12\n\nfrequencia\x18\x06 \x01(\x05\x12\x1a\n\x12ultima_comunicacao\x18\x07 \x01(\x03\"F\n\x11ResultadoAgregado\x12\x11\n\tdescricao\x18\x01 \x01(\t\x12\r\n\x05valor\x18\x02 \x01(\x02\x12\x0f\n\x07unidade\x18\x03 \x01(\tb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -36,17 +36,17 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_RESPOSTADESCOBERTA']._serialized_start=97
   _globals['_RESPOSTADESCOBERTA']._serialized_end=213
   _globals['_LEITURASENSOR']._serialized_start=216
-  _globals['_LEITURASENSOR']._serialized_end=400
-  _globals['_COMANDO']._serialized_start=402
-  _globals['_COMANDO']._serialized_end=459
-  _globals['_RESPOSTACOMANDO']._serialized_start=461
-  _globals['_RESPOSTACOMANDO']._serialized_end=512
-  _globals['_REQUISICAOCLIENTE']._serialized_start=514
-  _globals['_REQUISICAOCLIENTE']._serialized_end=603
-  _globals['_RESPOSTAGATEWAY']._serialized_start=606
-  _globals['_RESPOSTAGATEWAY']._serialized_end=809
-  _globals['_SENSORINFORMACOES']._serialized_start=812
-  _globals['_SENSORINFORMACOES']._serialized_end=955
-  _globals['_RESULTADOAGREGADO']._serialized_start=957
-  _globals['_RESULTADOAGREGADO']._serialized_end=1027
+  _globals['_LEITURASENSOR']._serialized_end=450
+  _globals['_COMANDO']._serialized_start=452
+  _globals['_COMANDO']._serialized_end=509
+  _globals['_RESPOSTACOMANDO']._serialized_start=511
+  _globals['_RESPOSTACOMANDO']._serialized_end=562
+  _globals['_REQUISICAOCLIENTE']._serialized_start=564
+  _globals['_REQUISICAOCLIENTE']._serialized_end=653
+  _globals['_RESPOSTAGATEWAY']._serialized_start=656
+  _globals['_RESPOSTAGATEWAY']._serialized_end=859
+  _globals['_SENSORINFORMACOES']._serialized_start=862
+  _globals['_SENSORINFORMACOES']._serialized_end=1005
+  _globals['_RESULTADOAGREGADO']._serialized_start=1007
+  _globals['_RESULTADOAGREGADO']._serialized_end=1077
 # @@protoc_insertion_point(module_scope)
