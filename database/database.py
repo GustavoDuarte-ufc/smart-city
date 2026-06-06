@@ -55,6 +55,70 @@ class Database:
         );
         """
 
+        sql_table_camera = """
+        CREATE TABLE IF NOT EXISTS camera (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cam_id TEXT NOT NULL,
+            ip TEXT NOT NULL,
+            port INTEGER NOT NULL,
+            status TEXT NOT NULL,
+            last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+        );
+        """
+
+        sql_camera_readings = """
+        CREATE TABLE IF NOT EXISTS camera_readings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cam_id TEXT NOT NULL
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            periodo_do_dia TEXT NOT NULL,
+            veiculos INTEGER NOT NULL,
+            pedestres INTEGER NOT NULL,
+            densidade_trafego TEXT NOT NULL
+        );
+        """
+
+        sql_table_poste = """
+        CREATE TABLE IF NOT EXISTS poste (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            poste_id TEXT NOT NULL,
+            ip TEXT NOT NULL,
+            port INTEGER NOT NULL,
+            status TEXT NOT NULL,
+            last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+        );
+        """
+
+        sql_poste_readings = """
+        CREATE TABLE IF NOT EXISTS poste_readings (
+            poste_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            estado TEXT NOT NULL,
+        );
+        """
+
+        sql_table_semaforo = """
+        CREATE TABLE IF NOT EXISTS semaforo (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            semaforo_id TEXT NOT NULL,
+            ip TEXT NOT NULL,
+            port INTEGER NOT NULL,
+            status TEXT NOT NULL,
+            last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+        );
+        """
+
+        sql_semaforo_readings = """
+        CREATE TABLE IF NOT EXISTS semaforod_readings (
+            semaforo_id TEXT NOT NULL,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            estado TEXT NOT NULL
+        );
+        """
+
         try:
             cursor = self._connection.cursor()
             cursor.execute(sql_table_sensors)
@@ -92,7 +156,7 @@ class Database:
             return []
         
 
-    def save_sensor_reading(
+    def save_sensor_readings(
         self,
         sensor_id,
         temperatura,
@@ -140,7 +204,7 @@ class Database:
             print(f"Erro ao salvar leitura: {e}")
             return False
         
-    def get_sensor_readings(self):
+    def get_sensor_reading(self):
 
         sql = """
         SELECT *
@@ -162,7 +226,179 @@ class Database:
 
             return []
         
+    def save_camera_readings(
+            self,
+            camera_id,
+            timestamp,
+            periodo_do_dia,
+            veiculos,
+            pedestres,
+            densidade_trafego
+                             ):
             
+        sql = """
+        INSERT INTO camera_readings (
+            camera_id,
+            timestamp,
+            periodo_do_dia,
+            veiculos,
+            pedestres,
+            densidade_trafego
+        )
+        VALUES (?, ?, ?, ?, ?, ?);
+        """
+        
+        try:
+            cursor = self._connection.cursor()
+
+            cursor.execute(
+                sql,
+                (
+                    camera_id,
+                    timestamp,
+                    periodo_do_dia,
+                    veiculos,
+                    pedestres,
+                    densidade_trafego
+                )
+            )
+
+            self._connection.commit()
+
+            return True
+
+        except Error as e:
+            print(f"Erro ao salvar leitura: {e}")
+            return False
+        
+    def get_camera_readings(self):
+
+        sql = """
+        SELECT *
+        FROM camera_readings
+        ORDER BY timestamp DESC;
+        """
+
+        try:
+
+            cursor = self._connection.cursor()
+
+            cursor.execute(sql)
+
+            return cursor.fetchall()
+
+        except Error as e:
+
+            print(f"Erro ao buscar leituras: {e}")
+
+    def save_poste_readings(
+            self,
+            poste_id,
+            estado
+        ):
+            
+        sql = """
+        INSERT INTO poste_readings (
+            poste_id,
+            estado
+        )
+        VALUES (?, ?);
+        """
+        
+        try:
+            cursor = self._connection.cursor()
+
+            cursor.execute(
+                sql,
+                (
+                    poste_id,
+                    estado
+                )
+            )
+
+            self._connection.commit()
+
+            return True
+
+        except Error as e:
+            print(f"Erro ao salvar leitura: {e}")
+            return False
+        
+    def get_poste_readings(self):
+
+        sql = """
+        SELECT *
+        FROM poste_readings
+        ORDER BY timestamp DESC;
+        """
+
+        try:
+
+            cursor = self._connection.cursor()
+
+            cursor.execute(sql)
+
+            return cursor.fetchall()
+
+        except Error as e:
+
+            print(f"Erro ao buscar leituras: {e}")
+
+
+    def save_semaforo_readings(
+            self,
+            semaforo_id,
+            estado
+        ):
+            
+        sql = """
+        INSERT INTO semaforo_readings (
+            semaforo_id,
+            estado
+        )
+        VALUES (?, ?);
+        """
+        
+        try:
+            cursor = self._connection.cursor()
+
+            cursor.execute(
+                sql,
+                (
+                    semaforo_id,
+                    estado
+                )
+            )
+
+            self._connection.commit()
+
+            return True
+
+        except Error as e:
+            print(f"Erro ao salvar leitura: {e}")
+            return False
+
+    def get_semaforo_readings(self):
+
+        sql = """
+        SELECT *
+        FROM semaforo_readings
+        ORDER BY timestamp DESC;
+        """
+
+        try:
+
+            cursor = self._connection.cursor()
+
+            cursor.execute(sql)
+
+            return cursor.fetchall()
+
+        except Error as e:
+
+            print(f"Erro ao buscar leituras: {e}")
+
+
     def close(self):
         """Fecha a conexão de forma limpa."""
         if self._connection:
