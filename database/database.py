@@ -156,7 +156,7 @@ class Database:
             return []
         
 
-    def save_sensor_readings(
+    def save_sensor_reading(
         self,
         sensor_id,
         temperatura,
