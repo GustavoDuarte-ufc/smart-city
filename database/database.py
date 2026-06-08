@@ -225,7 +225,34 @@ class Database:
             print(f"Erro ao buscar leituras: {e}")
 
             return []
-        
+
+    def save_camera(self, cam_id, ip, port, status):
+        """Salva uma nova leitura de sensor no banco de dados."""
+        sql = """
+        INSERT INTO cameras (cam_id, ip, port, status)
+        VALUES (?, ?, ?, ?);
+        """
+        try:
+            cursor = self._connection.cursor()
+            cursor.execute(sql, (cam_id, ip, port, status))
+            self._connection.commit()
+            print(f"Leitura da câmera {cam_id} salva com sucesso.")
+            return True
+        except Error as e:
+            print(f"Erro ao salvar leitura: {e}")
+            return False
+
+    def get_cameras(self):
+        """Retorna todas as leituras registradas."""
+        sql = "SELECT * FROM cameras ORDER BY last_seen DESC;"
+        try:
+            cursor = self._connection.cursor()
+            cursor.execute(sql)
+            return cursor.fetchall()
+        except Error as e:
+            print(f"Erro ao buscar leituras: {e}")
+            return []
+    
     def save_camera_readings(
             self,
             camera_id,
@@ -291,6 +318,33 @@ class Database:
 
             print(f"Erro ao buscar leituras: {e}")
 
+    def save_poste(self, poste_id, ip, port, status):
+        """Salva uma nova leitura de sensor no banco de dados."""
+        sql = """
+        INSERT INTO postes (poste_id, ip, port, status)
+        VALUES (?, ?, ?, ?);
+        """
+        try:
+            cursor = self._connection.cursor()
+            cursor.execute(sql, (poste_id, ip, port, status))
+            self._connection.commit()
+            print(f"Leitura do poste {poste_id} salva com sucesso.")
+            return True
+        except Error as e:
+            print(f"Erro ao salvar leitura: {e}")
+            return False
+
+    def get_postes(self):
+        """Retorna todas as leituras registradas."""
+        sql = "SELECT * FROM postes ORDER BY last_seen DESC;"
+        try:
+            cursor = self._connection.cursor()
+            cursor.execute(sql)
+            return cursor.fetchall()
+        except Error as e:
+            print(f"Erro ao buscar leituras: {e}")
+            return []
+    
     def save_poste_readings(
             self,
             poste_id,
@@ -344,7 +398,33 @@ class Database:
 
             print(f"Erro ao buscar leituras: {e}")
 
+    def save_semaforo(self, semaforo_id, ip, port, status):
+        """Salva uma nova leitura de sensor no banco de dados."""
+        sql = """
+        INSERT INTO semaforos (semaforo_id, ip, port, status)
+        VALUES (?, ?, ?, ?);
+        """
+        try:
+            cursor = self._connection.cursor()
+            cursor.execute(sql, (semaforo_id, ip, port, status))
+            self._connection.commit()
+            print(f"Leitura do semáforo {semaforo_id} salva com sucesso.")
+            return True
+        except Error as e:
+            print(f"Erro ao salvar leitura: {e}")
+            return False
 
+    def get_semaforos(self):
+        """Retorna todas as leituras registradas."""
+        sql = "SELECT * FROM semaforos ORDER BY last_seen DESC;"
+        try:
+            cursor = self._connection.cursor()
+            cursor.execute(sql)
+            return cursor.fetchall()
+        except Error as e:
+            print(f"Erro ao buscar leituras: {e}")
+            return []
+    
     def save_semaforo_readings(
             self,
             semaforo_id,
