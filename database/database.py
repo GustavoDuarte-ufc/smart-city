@@ -246,7 +246,7 @@ class Database:
 
             return []
 
-    def save_camera(self, cam_id, ip, port, status):
+    def save_cameras(self, cam_id, ip, port, status):
         """Salva uma nova leitura de sensor no banco de dados."""
         sql = """
         INSERT INTO cameras (cam_id, ip, port, status)
@@ -351,7 +351,7 @@ class Database:
 
             print(f"Erro ao buscar leituras: {e}")
 
-    def save_poste(self, poste_id, ip, port, status):
+    def save_postes(self, poste_id, ip, port, status):
         """Salva um novo poste no banco de dados."""
         sql = """
         INSERT INTO poste (poste_id, ip, port, status)
