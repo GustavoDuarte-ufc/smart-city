@@ -25,7 +25,7 @@ minha_cidade = CidadeInteligente()
 try:
 
     while True:
-        minha_cidade.simular_ciclo(5)
+        minha_cidade.simular_ciclo(10)
         time.sleep(5)
         
 

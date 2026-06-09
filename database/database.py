@@ -63,19 +63,18 @@ class Database:
             port INTEGER NOT NULL,
             status TEXT NOT NULL,
             last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
         );
         """
 
         sql_camera_readings = """
         CREATE TABLE IF NOT EXISTS camera_readings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            cam_id TEXT NOT NULL
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            cam_id TEXT NOT NULL,
             periodo_do_dia TEXT NOT NULL,
             veiculos INTEGER NOT NULL,
             pedestres INTEGER NOT NULL,
-            densidade_trafego TEXT NOT NULL
+            densidade_trafego TEXT NOT NULL,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         """
 
@@ -87,15 +86,15 @@ class Database:
             port INTEGER NOT NULL,
             status TEXT NOT NULL,
             last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
         );
         """
 
         sql_poste_readings = """
         CREATE TABLE IF NOT EXISTS poste_readings (
-            poste_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            poste_id TEXT NOT NULL,
             estado TEXT NOT NULL,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         """
 
@@ -107,15 +106,15 @@ class Database:
             port INTEGER NOT NULL,
             status TEXT NOT NULL,
             last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
         );
         """
 
         sql_semaforo_readings = """
-        CREATE TABLE IF NOT EXISTS semaforod_readings (
+        CREATE TABLE IF NOT EXISTS semaforo_readings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             semaforo_id TEXT NOT NULL,
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            estado TEXT NOT NULL
+            estado TEXT NOT NULL,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         """
 
@@ -123,6 +122,12 @@ class Database:
             cursor = self._connection.cursor()
             cursor.execute(sql_table_sensors)
             cursor.execute(sql_table_readings)
+            cursor.execute(sql_table_camera)
+            cursor.execute(sql_camera_readings)
+            cursor.execute(sql_table_poste)
+            cursor.execute(sql_poste_readings)
+            cursor.execute(sql_table_semaforo)
+            cursor.execute(sql_semaforo_readings)
             self._connection.commit()
             print("Tabela inicializada com sucesso.")
         except Error as e:
@@ -130,6 +135,10 @@ class Database:
 
     def save_sensor(self, sensor_id, sensor_type, ip, port, status):
         """Salva uma nova leitura de sensor no banco de dados."""
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. Save_sensor -> database")
+            return False
+
         sql = """
         INSERT INTO sensors (sensor_id, sensor_type, ip, port, status)
         VALUES (?, ?, ?, ?, ?);
@@ -146,6 +155,11 @@ class Database:
 
     def get_sensors(self):
         """Retorna todas as leituras registradas."""
+
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. get_sensors -> database")
+            return False
+        
         sql = "SELECT * FROM sensors ORDER BY last_seen DESC;"
         try:
             cursor = self._connection.cursor()
@@ -166,6 +180,9 @@ class Database:
         pressao,
         umidade
     ):
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. save_sensor_reading -> database")
+            return False
         
         sql = """
         INSERT INTO sensors_readings (
@@ -211,6 +228,9 @@ class Database:
         FROM sensors_readings
         ORDER BY timestamp DESC;
         """
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. get_sensor_reading -> database")
+            return False
 
         try:
 
@@ -232,6 +252,10 @@ class Database:
         INSERT INTO cameras (cam_id, ip, port, status)
         VALUES (?, ?, ?, ?);
         """
+
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. save_camera -> database")
+            return False
         try:
             cursor = self._connection.cursor()
             cursor.execute(sql, (cam_id, ip, port, status))
@@ -243,8 +267,13 @@ class Database:
             return False
 
     def get_cameras(self):
-        """Retorna todas as leituras registradas."""
-        sql = "SELECT * FROM cameras ORDER BY last_seen DESC;"
+        """Retorna todas as câmeras registradas."""
+        sql = "SELECT * FROM camera ORDER BY last_seen DESC;"
+
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. get_cameras -> database")
+            return False
+        
         try:
             cursor = self._connection.cursor()
             cursor.execute(sql)
@@ -256,24 +285,25 @@ class Database:
     def save_camera_readings(
             self,
             camera_id,
-            timestamp,
             periodo_do_dia,
             veiculos,
             pedestres,
-            densidade_trafego
-                             ):
+            densidade_trafego):
             
         sql = """
         INSERT INTO camera_readings (
-            camera_id,
-            timestamp,
+            cam_id,
             periodo_do_dia,
             veiculos,
             pedestres,
             densidade_trafego
         )
-        VALUES (?, ?, ?, ?, ?, ?);
+        VALUES (?, ?, ?, ?, ?);
         """
+
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. save_camera_reading -> database")
+            return False
         
         try:
             cursor = self._connection.cursor()
@@ -282,7 +312,6 @@ class Database:
                 sql,
                 (
                     camera_id,
-                    timestamp,
                     periodo_do_dia,
                     veiculos,
                     pedestres,
@@ -306,6 +335,10 @@ class Database:
         ORDER BY timestamp DESC;
         """
 
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. get_camera_reading -> database")
+            return False
+
         try:
 
             cursor = self._connection.cursor()
@@ -319,11 +352,16 @@ class Database:
             print(f"Erro ao buscar leituras: {e}")
 
     def save_poste(self, poste_id, ip, port, status):
-        """Salva uma nova leitura de sensor no banco de dados."""
+        """Salva um novo poste no banco de dados."""
         sql = """
-        INSERT INTO postes (poste_id, ip, port, status)
+        INSERT INTO poste (poste_id, ip, port, status)
         VALUES (?, ?, ?, ?);
         """
+
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. save_poste -> database")
+            return False
+
         try:
             cursor = self._connection.cursor()
             cursor.execute(sql, (poste_id, ip, port, status))
@@ -335,8 +373,13 @@ class Database:
             return False
 
     def get_postes(self):
-        """Retorna todas as leituras registradas."""
-        sql = "SELECT * FROM postes ORDER BY last_seen DESC;"
+        """Retorna todos os postes registrados."""
+        sql = "SELECT * FROM poste ORDER BY last_seen DESC;"
+
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. get_postes -> database")
+            return False
+        
         try:
             cursor = self._connection.cursor()
             cursor.execute(sql)
@@ -358,6 +401,10 @@ class Database:
         )
         VALUES (?, ?);
         """
+        
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. save_poste_reading -> database")
+            return False
         
         try:
             cursor = self._connection.cursor()
@@ -386,6 +433,10 @@ class Database:
         ORDER BY timestamp DESC;
         """
 
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. get_poste_reading -> database")
+            return False
+
         try:
 
             cursor = self._connection.cursor()
@@ -401,9 +452,13 @@ class Database:
     def save_semaforo(self, semaforo_id, ip, port, status):
         """Salva uma nova leitura de sensor no banco de dados."""
         sql = """
-        INSERT INTO semaforos (semaforo_id, ip, port, status)
+        INSERT INTO semaforo (semaforo_id, ip, port, status)
         VALUES (?, ?, ?, ?);
         """
+
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. save_semaforo -> database")
+            return False
         try:
             cursor = self._connection.cursor()
             cursor.execute(sql, (semaforo_id, ip, port, status))
@@ -416,7 +471,12 @@ class Database:
 
     def get_semaforos(self):
         """Retorna todas as leituras registradas."""
-        sql = "SELECT * FROM semaforos ORDER BY last_seen DESC;"
+        sql = "SELECT * FROM semaforo ORDER BY last_seen DESC;"
+
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. get_semaforo -> database")
+            return False
+        
         try:
             cursor = self._connection.cursor()
             cursor.execute(sql)
@@ -438,6 +498,10 @@ class Database:
         )
         VALUES (?, ?);
         """
+        
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. save_semaforo -> database")
+            return False
         
         try:
             cursor = self._connection.cursor()
@@ -466,6 +530,10 @@ class Database:
         ORDER BY timestamp DESC;
         """
 
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. get_semaforo_reading -> database")
+            return False
+
         try:
 
             cursor = self._connection.cursor()
@@ -478,6 +546,85 @@ class Database:
 
             print(f"Erro ao buscar leituras: {e}")
 
+    def save_poste(self, poste_id, ip, port, status):
+        """Salva um novo poste de luz no banco de dados."""
+        sql = """
+        INSERT INTO poste (poste_id, ip, port, status)
+        VALUES (?, ?, ?, ?);
+        """
+
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. save_poste -> database")
+            return False
+        try:
+            cursor = self._connection.cursor()
+            cursor.execute(sql, (poste_id, ip, port, status))
+            self._connection.commit()
+            print(f"Poste {poste_id} salvo com sucesso.")
+            return True
+        except Error as e:
+            print(f"Erro ao salvar poste: {e}")
+            return False
+
+    def save_poste_reading(self, poste_id, estado):
+        """Salva uma leitura de poste de luz no banco de dados."""
+        sql = """
+        INSERT INTO poste_readings (poste_id, estado)
+        VALUES (?, ?);
+        """
+
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. save_poste_reading -> database")
+            return False
+
+        try:
+            cursor = self._connection.cursor()
+            cursor.execute(sql, (poste_id, estado))
+            self._connection.commit()
+            return True
+        except Error as e:
+            print(f"Erro ao salvar leitura de poste: {e}")
+            return False
+
+    def save_camera(self, camera_id, ip, port, status):
+        """Salva uma nova câmera no banco de dados."""
+        sql = """
+        INSERT INTO camera (cam_id, ip, port, status)
+        VALUES (?, ?, ?, ?);
+        """
+
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. save_camera -> database")
+            return False
+        try:
+            cursor = self._connection.cursor()
+            cursor.execute(sql, (camera_id, ip, port, status))
+            self._connection.commit()
+            print(f"Câmera {camera_id} salva com sucesso.")
+            return True
+        except Error as e:
+            print(f"Erro ao salvar câmera: {e}")
+            return False
+
+    def save_camera_reading(self, camera_id, periodo_do_dia, veiculos, pedestres, densidade_trafego):
+        """Salva uma leitura de câmera no banco de dados."""
+        sql = """
+        INSERT INTO camera_readings (cam_id, periodo_do_dia, veiculos, pedestres, densidade_trafego)
+        VALUES (?, ?, ?, ?, ?);
+        """
+
+        if self._connection is None:
+            print("Erro: Sem conexão ativa com o banco de dados. save_camera_reading -> database")
+            return False
+
+        try:
+            cursor = self._connection.cursor()
+            cursor.execute(sql, (camera_id, periodo_do_dia, veiculos, pedestres, densidade_trafego))
+            self._connection.commit()
+            return True
+        except Error as e:
+            print(f"Erro ao salvar leitura de câmera: {e}")
+            return False
 
     def close(self):
         """Fecha a conexão de forma limpa."""

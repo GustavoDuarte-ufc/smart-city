@@ -34,18 +34,49 @@ class CidadeInteligente:
                 f"{dados['umidade']}"
             )
 
-            print(mensagem)
+            #print(mensagem)
 
             self.sock.sendto(
                 mensagem.encode(),
                 ("127.0.0.1", 5001)
             )
             
-        #print("\n[Trânsito]")
-        #for semaforo in self.semaforos:
-            #estado_atual = semaforo.atualizar(tempo_passo_segundos)
-            # print(f"Semáforo {semaforo.id}: {estado_atual}")
+        print("\n[Trânsito]")
+        for semaforo in self.semaforos:
+
+            estado_atual = semaforo.atualizar(tempo_passo_segundos)
+            print(f"Semáforo {semaforo.id}: {estado_atual}")
             
-        #print("\n[Câmeras]")
-        #for camera in self.cameras:
-            # print(camera.capturar_fluxo())
+            # Enviar dados do semáforo via UDP
+            mensagem = f"{semaforo.id},{estado_atual}"
+            self.sock.sendto(
+                mensagem.encode(),
+                ("127.0.0.1", 5001)
+            )
+
+        print("\n[Iluminação]")
+        for poste in self.postes:
+            estado_atual = poste.alternar_estado()
+            print(f"Poste {poste.id}: {estado_atual}")
+            
+            # Enviar dados do poste via UDP
+            mensagem = f"{poste.id},{estado_atual}"
+            self.sock.sendto(
+                mensagem.encode(),
+                ("127.0.0.1", 5001)
+            )
+            
+        print("\n[Câmeras]")
+        for camera in self.cameras:
+            dados = camera.capturar_fluxo()
+            print(f"Câmera {camera.id}: {dados['periodo_do_dia']} - "
+                  f"Veículos: {dados['veiculos']}, Pedestres: {dados['pedestres']}")
+            
+            # Enviar dados da câmera via UDP
+            # Formato: camera_id,periodo_do_dia,veiculos,pedestres,densidade_trafego
+            mensagem = (f"{dados['camera_id']},{dados['periodo_do_dia']},"
+                       f"{dados['veiculos']},{dados['pedestres']},{dados['densidade_trafego']}")
+            self.sock.sendto(
+                mensagem.encode(),
+                ("127.0.0.1", 5001)
+            )

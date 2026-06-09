@@ -32,6 +32,27 @@ message LeituraSensor {
     string dado_extra = 11;
 }
 
+message LeituraSemaforo {
+    string semaforo_id = 1;
+    string estado = 2;
+    int64 timestamp = 3;
+}
+
+message LeituraPoste {
+    string poste_id = 1;
+    string estado = 2;
+    int64 timestamp = 3;
+}
+
+message LeituraCamera {
+    string camera_id = 1;
+    string periodo_do_dia = 2;
+    int32 veiculos = 3;
+    int32 pedestres = 4;
+    string densidade_trafego = 5;
+    int64 timestamp = 6;
+}
+
 
 message Comando {
     string sensor_id = 1;
@@ -59,6 +80,9 @@ message RespostaGateway {
     repeated SensorInformacoes sensores = 4;
     repeated LeituraSensor leituras = 5;
     ResultadoAgregado agregado = 6;
+    repeated LeituraSemaforo leituras_semaforos = 7;
+    repeated LeituraPoste leituras_postes = 8;
+    repeated LeituraCamera leituras_cameras = 9;
 }
 
 message SensorInformacoes {

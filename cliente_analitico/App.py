@@ -52,15 +52,24 @@ def menu():
     while True:
 
         print("\n===== CLIENTE ANALÍTICO =====")
-        print("1 - Listar sensores")
-        print("2 - Ver leituras")
-        print("3 - Enviar comandos")
-        print("4 - Sair")
+        print("--- Sensores Climáticos ---")
+        print("1 - Listar sensores climáticos")
+        print("2 - Ver leituras climáticas")
+        print("--- Semáforos ---")
+        print("3 - Listar semáforos")
+        print("4 - Ver leituras de semáforos")
+        print("--- Postes ---")
+        print("5 - Listar postes")
+        print("6 - Ver leituras de postes")
+        print("--- Câmeras ---")
+        print("7 - Listar câmeras")
+        print("8 - Ver leituras de câmeras")
+        print("9 - Sair")
 
 
         opcao = input("Escolha: ")
 
-        if opcao == "4":
+        if opcao == "9":
             break
 
         req = mensagens_pb2.RequisicaoCliente()
@@ -70,21 +79,24 @@ def menu():
 
         elif opcao == "2":
             req.tipo = "leituras"
-            print("Enviando requisição de leituras...")
 
         elif opcao == "3":
-            sensor_id = input("ID do sensor: ")
-            acao = input("Ação (ativar/desativar/set_frequencia): ")
-            valor = ""
-            if acao in ("set_frequencia", "set_limiar"):
-                valor = input("Valor: ")
-            cmd = mensagens_pb2.Comando(
-                sensor_id=sensor_id,
-                acao=acao,
-                valor=valor
-            )
-            req = mensagens_pb2.RequisicaoCliente(tipo="comando")
-            req.comando.CopyFrom(cmd)
+            req.tipo = "listar_semaforos"
+
+        elif opcao == "4":
+            req.tipo = "leituras_semaforos"
+
+        elif opcao == "5":
+            req.tipo = "listar_postes"
+
+        elif opcao == "6":
+            req.tipo = "leituras_postes"
+
+        elif opcao == "7":
+            req.tipo = "listar_cameras"
+
+        elif opcao == "8":
+            req.tipo = "leituras_cameras"
 
         else:
             print("Opção inválida")
@@ -93,8 +105,6 @@ def menu():
         client = conectar()
         if client is None:
             continue
-
-
 
         print("Conectado")
 
@@ -109,31 +119,77 @@ def menu():
         client.close()
 
         print(f"\nStatus: {resposta.status}")
-        print(f"Mensagem: {resposta.mensagem}")
+        print(f"Mensagem: {resposta.mensagem}\n")
 
-        if opcao == "1":
+        if not resposta.status:
+            print("Erro na resposta do servidor")
+            continue
 
-            for sensor in resposta.sensores:
-
-                print(
-                    f"{sensor.sensor_id} | "
-                    f"{sensor.tipo} | "
-                    f"{sensor.status}"
-                )
+        if opcao in ("1", "3", "5", "7"):
+            # Listar dispositivos
+            if resposta.sensores:
+                for sensor in resposta.sensores:
+                    print(
+                        f"{sensor.sensor_id} | "
+                        f"{sensor.tipo} | "
+                        f"{sensor.status}"
+                    )
+            else:
+                print("Nenhum dispositivo encontrado")
 
         elif opcao == "2":
-            for leitura in resposta.leituras:
+            # Leituras climáticas
+            if resposta.leituras:
+                for leitura in resposta.leituras:
+                    print(
+                        f"\nSensor: {leitura.sensor_id}\n"
+                        f"Temperatura: {leitura.temperatura}\n"
+                        f"Sensação Térmica: {leitura.sensacao_termica}\n"
+                        f"Temperatura Mínima: {leitura.temperatura_min}\n"
+                        f"Temperatura Máxima: {leitura.temperatura_max}\n"
+                        f"Pressão: {leitura.pressao}\n"
+                        f"Umidade: {leitura.umidade}\n"
+                    )
+            else:
+                print("Nenhuma leitura encontrada")
 
-                print(
-                    f"\nSensor: {leitura.sensor_id}\n"
-                    f"Temperatura: {leitura.temperatura}\n"
-                    f"Sensação Térmica: {leitura.sensacao_termica}\n"
-                    f"Temperatura Mínima: {leitura.temperatura_min}\n"
-                    f"Temperatura Máxima: {leitura.temperatura_max}\n"
-                    f"Pressão: {leitura.pressao}\n"
-                    f"Umidade: {leitura.umidade}\n"
-                    f"Timestamp: {leitura.timestamp}\n"
-                )
+        elif opcao in ("4", "6", "8"):
+            # Leituras de semáforos, postes e câmeras
+            if opcao == "4":
+                # Semáforos
+                if resposta.leituras_semaforos:
+                    for leitura in resposta.leituras_semaforos:
+                        print(
+                            f"\nSemáforo: {leitura.semaforo_id}\n"
+                            f"Estado: {leitura.estado}\n"
+                        )
+                else:
+                    print("Nenhuma leitura de semáforo encontrada")
+            
+            elif opcao == "6":
+                # Postes
+                if resposta.leituras_postes:
+                    for leitura in resposta.leituras_postes:
+                        print(
+                            f"\nPoste: {leitura.poste_id}\n"
+                            f"Estado: {leitura.estado}\n"
+                        )
+                else:
+                    print("Nenhuma leitura de poste encontrada")
+            
+            elif opcao == "8":
+                # Câmeras
+                if resposta.leituras_cameras:
+                    for leitura in resposta.leituras_cameras:
+                        print(
+                            f"\nCâmera: {leitura.camera_id}\n"
+                            f"Período: {leitura.periodo_do_dia}\n"
+                            f"Veículos: {leitura.veiculos}\n"
+                            f"Pedestres: {leitura.pedestres}\n"
+                            f"Densidade: {leitura.densidade_trafego}\n"
+                        )
+                else:
+                    print("Nenhuma leitura de câmera encontrada")
             
 
 
